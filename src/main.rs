@@ -10,26 +10,29 @@ const HARD_LUCKY_CHANCE: f64 = 0.25;
 const HARD_START_MONEY: u64 = 250;
 
 fn main() {
+let mut cheats= false;
+    
     loop {
         let mut user_input = String::new();
 
         println!("{}", "Welcome to Duble my money game!".green().bold());
-        println!("1)Play, 2)Rules");
+        println!("1)Play, 2)Rules, 3)Settings");
 
         match io::stdin().read_line(&mut user_input) {
-            Ok(_) => print!(""),
+            Ok(_) => {},
             Err(er) => println!("Program crash, error: {er}")
         }
 
         match &*user_input.trim().to_lowercase() {
-            "1"|"play" => {println!(); modes(); break;}
+            "1"|"play" => {modes(cheats); break;}
             "2"|"rules" => description(),
+            "3"|"settings" => cheats = settings(cheats),
              _  => {println!("{}", "Try to write [1] or [2]".red()); println!(); continue;}
         }  
     }
 }
 
-fn modes() {
+fn modes(cheats: bool) {
     let mut user_input = String::new();
     
     loop {
@@ -39,23 +42,23 @@ fn modes() {
         println!("3)Hard, start money: {HARD_START_MONEY}, risk of bad luck: 75%");
 
         match io::stdin().read_line(&mut user_input) {
-            Ok(_) => print!(""),
+            Ok(_) => {},
             Err(er) => println!("Program crash, error: {er}")
         }
 
         match &*user_input.trim().to_lowercase() {
-            "1"|"easy" => {let mode="easy"; game(mode); break},
-            "2"|"normal" => {let mode="normal"; game(mode); break},
-            "3"|"hard" => {let mode="hard"; game(mode); break},
+            "1"|"easy" => {let mode="easy"; game(mode, cheats); break},
+            "2"|"normal" => {let mode="normal"; game(mode, cheats); break},
+            "3"|"hard" => {let mode="hard"; game(mode, cheats); break},
             _ => {println!("{}", "Try to write [1] or [2] or [3]".red()); continue}
         }
     }
 }
 
-fn game(mode: &str) {
+fn game(mode: &str, cheats: bool) {
     let mut rng = rand::rng();
     let mut user_input = String::new();
-    
+
     println!();
     let mut money = match mode {
         "easy" => EASY_START_MONEY,
@@ -68,24 +71,28 @@ fn game(mode: &str) {
     loop {
         
         println!("{}", "Risk or safe?".blue().bold());
-        println!("Tip: 1)Risk, 2)Safe");
-        
+
+        let lucky = match mode {
+            "easy" => rng.random_bool(EASY_LUCKY_CHANCE),
+            "normal" => rng.random_bool(NORMAL_LUCKY_CHANCE),
+            "hard" => rng.random_bool(HARD_LUCKY_CHANCE),
+            _ => todo!()
+        };
+
+        match cheats {
+            true => {print!("[Cheats]: "); if lucky == true {println!("{}", "luck".green())} else if lucky == false {println!("{}", "unluck".red())}}
+            false => {}
+        }
+
         user_input.clear();
         match io::stdin().read_line(&mut user_input) {
-            Ok(_) => print!(" "),
+            Ok(_) => {},
             Err(er) => println!("Something went wrong, error: {er}")
         }
         println!();
 
         match &*user_input.trim().to_lowercase() {
             "1"|"risk" => {
-                
-                let lucky = match mode {
-                    "easy" => rng.random_bool(EASY_LUCKY_CHANCE),
-                    "normal" => rng.random_bool(NORMAL_LUCKY_CHANCE),
-                    "hard" => rng.random_bool(HARD_LUCKY_CHANCE),
-                    _ => todo!()
-                };
                 
                 match lucky {
                     true => {
@@ -98,7 +105,7 @@ fn game(mode: &str) {
                         match mode {
                             "easy" => {
                                 money /= 2;
-                                println!("I theft part of your money!");
+                                println!("{}", "I theft part of your money!".red().bold());
                             }
                             _=> {
                                 money = 0;                                
@@ -208,10 +215,71 @@ Trust your intuition, good luck!");
     println!("{}", "Press anything key to continue".blue().bold());
 
     match io::stdin().read_line(&mut user_input) {
-        Ok(_) => print!(" "),
+        Ok(_) => {},
         Err(er) => println!("Program crash, error: {er}")
     }
 
+}
+
+fn settings(mut cheats: bool) -> bool {
+    let mut user_input = String::new();
+    loop {
+        println!(" ");
+        print!("{}", "1)Cheats: ".bold());
+        
+        match cheats {
+            true => println!("{}", "True".green()),
+            false => println!("{}", "False".red())
+        }
+
+        println!(" ");
+        println!("What setting would you like to change? [print [No] for exit]");
+        
+        user_input.clear();
+        match io::stdin().read_line(&mut user_input) {
+            Ok(_) => {},
+            Err(er) => {println!("Program crash, error: {er}")}
+        }
+
+        match &*user_input.trim().to_lowercase() {
+            "1"|"cheats" => {
+                user_input.clear();
+                println!("[Cheats]: 1)True, 2)False");
+                
+                match io::stdin().read_line(&mut user_input) {
+                    Ok(_) => {},
+                    Err(er) => {println!("Program crash, error: {er}")}
+                }
+
+                match &*user_input.trim().to_lowercase() {
+                    "1"|"true" => {user_input.clear(); cheats = true},
+                    "2"|"false" => {user_input.clear(); cheats = false},
+                    _ => {user_input.clear(); println!("Try to write [1] or [2]");}
+                }
+            },
+            "no"|"n" => {
+                break cheats;
+            },
+            _ => {
+                user_input.clear();
+
+                println!("{}", "Try to write [1] or [no]".red());
+                continue;
+            }
+        }
+        println!("where are we heading next? 1)Settings menu, 2)Main menu");  
+        
+        match io::stdin().read_line(&mut user_input) {
+            Ok(_) => {},
+            Err(er) => {println!("Program crash, error: {er}")}
+        }    
+        
+        match &*user_input.trim().to_lowercase() {
+            "1"|"settings menu"|"settings" => {user_input.clear(); continue},
+            "2"|"main menu"|"main" => {user_input.clear(); if cheats == true {break true} else if cheats == false {break false}},
+            _=> todo!()
+        }
+    }
 }
 
 fn game_continue() -> bool{
@@ -226,8 +294,8 @@ fn game_continue() -> bool{
         }
         
         match &*user_input.trim().to_lowercase() {
-            "1"|"yes" => {user_input.clear(); println!();break true},
-            "2"|"no" => {user_input.clear(); println!();break false},
+            "1"|"yes" => {user_input.clear(); println!(); break true},
+            "2"|"no" => {user_input.clear(); println!(); break false},
             _  => {user_input.clear(); println!("{}", "Please write [1] or [2]".red()); println!(" "); continue}
         };
     }
