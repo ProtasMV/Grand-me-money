@@ -109,8 +109,16 @@ fn game(mode: &str) {
                         println!("Now, your money: {money}$");                           
                         
                         let user_continue = game_continue();
+                        
+                        money = match mode {
+                            "easy" => EASY_START_MONEY,
+                            "normal" => NORMAL_START_MONEY,
+                            "hard" => HARD_START_MONEY,
+                            _ => todo!()
+                        };            
+                        
                         match user_continue {
-                            true => {money = 100; continue},
+                            true => continue,
                             false => break
                         }                    
                     }
