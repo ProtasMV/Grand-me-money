@@ -200,9 +200,9 @@ fn description() {
     let mut user_input = String::new();
     
     println!("
-The rules of the game are simple: you deposit a starting amount of $100,
-you can take a risk and have a 50% chance of doubling the amount or losing everything.
-Focus on your own intuition, good luck!");
+The rules of the game are simple: you deposit an initial amount,
+you can take a risk, and you have a 50% chance of doubling your winnings or losing everything.
+Trust your intuition, good luck!");
 
     println!(" ");
     println!("{}", "Press anything key to continue".blue().bold());
