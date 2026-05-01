@@ -23,7 +23,7 @@ let mut cheats= false;
             Err(er) => println!("Program crash, error: {er}")
         }
 
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"play" => {modes(cheats); break;}
             "2"|"rules" => description(),
             "3"|"settings" => cheats = settings(cheats),
@@ -46,7 +46,7 @@ fn modes(cheats: bool) {
             Err(er) => println!("Program crash, error: {er}")
         }
 
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"easy" => {let mode="easy"; game(mode, cheats); break},
             "2"|"normal" => {let mode="normal"; game(mode, cheats); break},
             "3"|"hard" => {let mode="hard"; game(mode, cheats); break},
@@ -79,9 +79,13 @@ fn game(mode: &str, cheats: bool) {
             _ => todo!()
         };
 
-        match cheats {
-            true => {print!("[Cheats]: "); if lucky == true {println!("{}", "luck".green())} else if lucky == false {println!("{}", "unluck".red())}}
-            false => {}
+        if cheats {
+            print!("[Cheats]: ");
+            if lucky {
+                println!("{}", "luck".green())
+            } else if !lucky {
+                println!("{}", "unluck".red())
+            }
         }
 
         user_input.clear();
@@ -91,7 +95,7 @@ fn game(mode: &str, cheats: bool) {
         }
         println!();
 
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"risk" => {
                 
                 match lucky {
@@ -227,9 +231,10 @@ fn settings(mut cheats: bool) -> bool {
         println!(" ");
         print!("{}", "1)Cheats: ".bold());
         
-        match cheats {
-            true => println!("{}", "True".green()),
-            false => println!("{}", "False".red())
+        if cheats {
+            println!("{}", "True".green())
+        } else if !cheats {
+            println!("{}", "False".red())
         }
 
         println!(" ");
@@ -241,7 +246,7 @@ fn settings(mut cheats: bool) -> bool {
             Err(er) => {println!("Program crash, error: {er}")}
         }
 
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"cheats" => {
                 user_input.clear();
                 println!("[Cheats]: 1)True, 2)False");
@@ -251,7 +256,7 @@ fn settings(mut cheats: bool) -> bool {
                     Err(er) => {println!("Program crash, error: {er}")}
                 }
 
-                match &*user_input.trim().to_lowercase() {
+                match user_input.trim().to_lowercase().as_str() {
                     "1"|"true" => {user_input.clear(); cheats = true},
                     "2"|"false" => {user_input.clear(); cheats = false},
                     _ => {user_input.clear(); println!("Try to write [1] or [2]");}
@@ -274,7 +279,7 @@ fn settings(mut cheats: bool) -> bool {
             Err(er) => {println!("Program crash, error: {er}")}
         }    
         
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"settings menu"|"settings" => {user_input.clear(); continue},
             "2"|"main menu"|"main" => {user_input.clear(); if cheats == true {break true} else if cheats == false {break false}},
             _=> todo!()
@@ -293,7 +298,7 @@ fn game_continue() -> bool{
             Err(er) => println!("Program crash, error: {er}")
         }
         
-        match &*user_input.trim().to_lowercase() {
+        match user_input.trim().to_lowercase().as_str() {
             "1"|"yes" => {user_input.clear(); println!(); break true},
             "2"|"no" => {user_input.clear(); println!(); break false},
             _  => {user_input.clear(); println!("{}", "Please write [1] or [2]".red()); println!(" "); continue}
